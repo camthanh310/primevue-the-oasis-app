@@ -48,6 +48,7 @@ const sizeClass = computed((): string => {
     class="border-none rounded-md shadow-sm"
     :class="[variantClass, sizeClass]"
     v-bind="$attrs"
+    unstyled
   >
     <slot />
   </Button>
