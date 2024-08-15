@@ -34,6 +34,39 @@ export type Database = {
   }
   public: {
     Tables: {
+      cabins: {
+        Row: {
+          created_at: string
+          description: string | null
+          discount: number | null
+          id: number
+          image: string | null
+          maxCapacity: number | null
+          name: string | null
+          regularPrice: number | null
+        }
+        Insert: {
+          created_at?: string
+          description?: string | null
+          discount?: number | null
+          id?: number
+          image?: string | null
+          maxCapacity?: number | null
+          name?: string | null
+          regularPrice?: number | null
+        }
+        Update: {
+          created_at?: string
+          description?: string | null
+          discount?: number | null
+          id?: number
+          image?: string | null
+          maxCapacity?: number | null
+          name?: string | null
+          regularPrice?: number | null
+        }
+        Relationships: []
+      }
       settings: {
         Row: {
           breakfastPrice: number | null

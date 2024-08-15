@@ -17,7 +17,18 @@ app.use(PrimeVue, {
     preset: Aura
   }
 })
+
 app.use(ToastService)
-app.use(VueQueryPlugin)
+
+app.use(VueQueryPlugin, {
+  enableDevtoolsV6Plugin: true,
+  queryClientConfig: {
+    defaultOptions: {
+      queries: {
+        staleTime: 0
+      }
+    }
+  }
+})
 
 app.mount('#app')

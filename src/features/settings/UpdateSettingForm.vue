@@ -1,13 +1,11 @@
 <script lang="ts" setup>
-import type { SettingType } from '@/types/Collection'
+import type { Setting } from '@/types/Collection'
 import { useSettings } from '@/composables/useSettings'
 import { useUpdateSetting } from '@/composables/useUpdateSetting'
 import AppForm from '@/components/AppForm.vue'
 import FormRow from '@/components/FormRow.vue'
 import AppInput from '@/components/AppInput.vue'
 import AppSpinner from '@/components/AppSpinner.vue'
-
-type Setting = Exclude<Array<keyof SettingType>[number], 'created_at'>
 
 const { settings, isLoading } = useSettings()
 const { updateSetting, isUpdating } = useUpdateSetting()

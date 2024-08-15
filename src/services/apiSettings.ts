@@ -1,4 +1,4 @@
-import type { UpdateSettingType } from '@/types/Collection'
+import type { SettingRowType } from '@/types/Collection'
 import supabase from './supabase'
 
 export async function getSettings() {
@@ -12,7 +12,7 @@ export async function getSettings() {
   return data
 }
 
-export async function updateSetting(newSetting: UpdateSettingType) {
+export async function updateSetting(newSetting: SettingRowType) {
   const { data, error } = await supabase.from('settings').update(newSetting).eq('id', 1).single()
 
   if (error) {
