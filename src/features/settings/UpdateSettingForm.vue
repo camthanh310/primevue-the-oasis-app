@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import type { Setting } from '@/types/Collection'
-import { useSettings } from '@/composables/cabins/useSettings'
+import { useSettings } from '@/composables/settings/useSettings'
 import { useUpdateSetting } from '@/composables/settings/useUpdateSetting'
 import AppForm from '@/components/AppForm.vue'
 import FormRow from '@/components/FormRow.vue'
