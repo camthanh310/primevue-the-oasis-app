@@ -1,112 +1,145 @@
 <script lang="ts" setup>
-import { useForm } from '@vue-hooks-form/core'
+import { computed, ref, watchEffect } from 'vue'
+import { useForm } from 'vee-validate'
+import { toTypedSchema } from '@vee-validate/zod'
+import { object, string, number, any } from 'zod'
+import { useCreateCabin } from '@/composables/useCreateCabin'
 import AppButton from '@/components/AppButton.vue'
 import AppFile from '@/components/AppFile.vue'
 import AppForm from '@/components/AppForm.vue'
 import AppInput from '@/components/AppInput.vue'
 import AppTextarea from '@/components/AppTextarea.vue'
 import FormRow from '@/components/FormRow.vue'
-import type { Cabin } from '@/types/Collection'
+
+const { createCabin, isCreating } = useCreateCabin()
 
 const emit = defineEmits<{
   'on-close-modal': []
 }>()
 
-const {
-  register,
-  handleSubmit,
-  getValues,
-  formState: { errors }
-} = useForm<Cabin>()
+const fileRef = ref<InstanceType<typeof AppFile> | null>(null)
+
+const schema = toTypedSchema(
+  object({
+    name: string({
+      required_error: 'This field is required'
+    }),
+    maxCapacity: number({
+      required_error: 'This field is required'
+    }).min(1, { message: 'Capacity should be at least 1' }),
+    regularPrice: number({
+      required_error: 'This field is required'
+    }).min(1, { message: 'Regular price should be at least 1' }),
+    discount: number({
+      required_error: 'This field is required'
+    }),
+    description: string({
+      required_error: 'This field is required'
+    }),
+    image: any().refine((file: File) => file?.size !== 0, {
+      message: 'This field is required'
+    })
+  }).refine((data) => data.discount <= data.regularPrice, {
+    message: 'Discount should be less than regular price',
+    path: ['discount']
+  })
+)
+const { errors, defineField, handleSubmit } = useForm({
+  validationSchema: schema
+})
+
+const [name, nameAttrs] = defineField('name')
+const [maxCapacity, maxCapacityAttrs] = defineField('maxCapacity')
+const [regularPrice, regularPriceAttrs] = defineField('regularPrice')
+const [discount, discountAttrs] = defineField('discount')
+const [description, descriptionAttrs] = defineField('description')
+const [image, imageAttrs] = defineField('image')
 
 function onCloseModal() {
   emit('on-close-modal')
 }
 
-function onSubmit() {
-  console.log('should working...')
+const isWorking = computed(() => isCreating.value)
+
+const onSubmit = handleSubmit((values, actions) => {
+  console.log(values)
+
+  createCabin(values, {
+    onSuccess: () => {
+      actions.resetForm({
+        values: {
+          discount: 0,
+          image: null
+        }
+      })
+      fileRef.value?.cleanInputFile()
+      onCloseModal()
+    }
+  })
+})
+
+function handleUploadFile(file: File) {
+  image.value = file
 }
+
+watchEffect(() => {
+  discount.value = 0
+})
 </script>
 
 <template>
-  <AppForm @submit.prevent="handleSubmit(onSubmit)()" form-type="modal">
-    <FormRow label="Cabin name" :error="errors.name?.message">
-      <AppInput
-        id="name"
-        :="
-          register('name', {
-            required: 'This field is required'
-          })
-        "
-      />
+  <AppForm @submit="onSubmit" form-type="modal">
+    <FormRow label="Cabin name" :error="errors.name">
+      <AppInput id="name" v-model="name" v-bind="nameAttrs" :disabled="isWorking" />
     </FormRow>
-    <FormRow label="Maximum capacity" :error="errors.maxCapacity?.message">
+    <FormRow label="Maximum capacity" :error="errors.maxCapacity">
       <AppInput
         type="number"
         id="maxCapacity"
-        :="
-          register('maxCapacity', {
-            required: 'This field is required',
-            min: {
-              value: 1,
-              message: 'Capacity should be at least 1'
-            }
-          })
-        "
+        v-model.number="maxCapacity"
+        v-bind="maxCapacityAttrs"
+        :disabled="isWorking"
       />
     </FormRow>
-    <FormRow label="Regular price" :error="errors.regularPrice?.message">
+    <FormRow label="Regular price" :error="errors.regularPrice">
       <AppInput
         type="number"
         id="regularPrice"
-        :="
-          register('regularPrice', {
-            required: 'This field is required',
-            min: {
-              value: 1,
-              message: 'Regular price should be at least 1'
-            }
-          })
-        "
+        v-model.number="regularPrice"
+        v-bind="regularPriceAttrs"
+        :disabled="isWorking"
       />
     </FormRow>
-    <FormRow label="Discount" :error="errors.discount?.message">
+    <FormRow label="Discount" :error="errors.discount">
       <AppInput
         type="number"
         id="discount"
-        :="
-          register('discount', {
-            required: 'This field is required',
-            validate: (value) =>
-              value <= getValues('regularPrice') || 'Discount should be less than regular price'
-          })
-        "
+        v-model.number="discount"
+        v-bind="discountAttrs"
+        :disabled="isWorking"
       />
     </FormRow>
-    <FormRow label="Description for website" :error="errors.description?.message">
+    <FormRow label="Description for website" :error="errors.description">
       <AppTextarea
         id="description"
-        :="
-          register('description', {
-            required: 'This field is required'
-          })
-        "
+        v-model="description"
+        v-bind="descriptionAttrs"
+        :disabled="isWorking"
       />
     </FormRow>
-    <FormRow label="Cabin photo">
+    <FormRow label="Cabin photo" :error="errors.image">
       <AppFile
         id="image"
         accept="image/*"
-        :="
-          register('image', {
-            required: 'This field is required'
-          })
-        "
+        @change="handleUploadFile"
+        ref="fileRef"
+        v-bind="imageAttrs"
+        :disabled="isWorking"
       />
     </FormRow>
     <FormRow>
       <AppButton type="reset" variant="secondary" @click="onCloseModal">Cancel</AppButton>
-      <AppButton type="submit">Create new cabin</AppButton>
+      <AppButton type="submit" :disabled="isWorking">Create new cabin</AppButton>
     </FormRow>
   </AppForm>
 </template>

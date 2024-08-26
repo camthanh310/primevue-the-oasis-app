@@ -9,10 +9,7 @@ export type CabinRowType = Database['public']['Tables']['cabins']['Row']
 export type CabinInsertType = Database['public']['Tables']['cabins']['Insert']
 export type CabinType = Partial<Tables<'cabins'>>
 
-export interface CabinImage {
-  name: string
-}
 type CabinImageType = {
-  image?: string | null | CabinImage
+  image?: string | File | null
 }
 export type Cabin = Omit<CabinType, 'image'> & CabinImageType

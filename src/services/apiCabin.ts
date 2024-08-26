@@ -1,5 +1,4 @@
-import type { PostgrestQueryBuilder } from '@supabase/postgrest-js'
-import type { Cabin, CabinImage } from '@/types/Collection'
+import type { Cabin } from '@/types/Collection'
 import supabase, { supabaseUrl } from './supabase'
 
 export async function getCabins() {
@@ -20,27 +19,43 @@ export async function createEditCabin(newCabin: Cabin, id?: string | null) {
   }
 
   let imageName = ''
-  if (typeof newCabin.image === 'object') {
-    imageName = `${Math.random()}-${(newCabin.image! as CabinImage)?.name}`.replaceAll('/', '')
+  if (newCabin.image instanceof File) {
+    imageName = `${Math.random()}-${newCabin.image.name}`.replaceAll('/', '')
   }
 
   const imagePath = hasImagePath
-    ? newCabin.image
+    ? (newCabin.image as string)
     : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`
+
   // 1 Create/Edit cabin
   let query = supabase.from('cabins')
+  let data: Cabin | null = null
+  let error = null
 
   // A Create
   if (!id) {
-    query.insert([{ ...newCabin, image: imagePath as string }])
+    const { data: insertData, error: insertError } = await query
+      .insert([{ ...newCabin, image: imagePath }])
+      .select()
+      .returns<Cabin>()
+      .single()
+
+    data = insertData
+    error = insertError
   }
 
   // B Edit
   if (id) {
-    query.update({ ...newCabin, image: imagePath as string }).eq('id', id)
-  }
+    const { data: updateData, error: updateError } = await query
+      .update({ ...newCabin, image: imagePath })
+      .eq('id', id)
+      .select()
+      .returns<Cabin>()
+      .single()
 
-  const { data, error } = await query.select().single()
+    data = updateData
+    error = updateError
+  }
 
   if (error) {
     console.error(error)
@@ -53,12 +68,12 @@ export async function createEditCabin(newCabin: Cabin, id?: string | null) {
   }
 
   const { error: storageError } = await supabase.storage
-    .from('cabins-images')
-    .upload(imageName, newCabin.image! as string)
+    .from('cabin-images')
+    .upload(imageName, newCabin.image!)
 
   // 3 Delete the cabin if there was an error uploading image
   if (storageError) {
-    await supabase.from('cabins').delete().eq('id', data.id)
+    await supabase.from('cabins').delete().eq('id', data!.id!)
     console.error(storageError)
     throw new Error('Cabins image could not be uploaded and the cabin was not created')
   }
