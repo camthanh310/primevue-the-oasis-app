@@ -44,7 +44,7 @@ const menus: Menu[] = [
           <RouterLink
             active-class="bg-gray-50 text-gray-800 rounded-md"
             exact-active-class="bg-gray-50 text-gray-800 rounded-md"
-            class="group flex items-center gap-3 text-gray-600 font-normal text-lg py-3 px-6 transition-all duration-300 hover:bg-gray-50 hover:text-gray-800 hover:rounded-md"
+            class="group flex items-center gap-3 text-gray-600 font-medium text-base py-3 px-6 transition-all duration-300 hover:bg-gray-50 hover:text-gray-800 hover:rounded-md"
             :to="{ name: menu.href }"
             v-slot="{ isActive }"
           >
