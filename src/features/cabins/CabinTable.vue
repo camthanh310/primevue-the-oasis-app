@@ -5,9 +5,25 @@ import AppSpinner from '@/components/AppSpinner.vue'
 import AppEmpty from '@/components/AppEmpty.vue'
 import { useCabins } from '@/composables/cabins/useCabins'
 import type { CabinRowType } from '@/types/Collection'
-import { EllipsisVertical } from 'lucide-vue-next'
+import { EllipsisVertical, Copy, Pencil, Trash } from 'lucide-vue-next'
+import AppButtonIcon from '@/components/AppButtonIcon.vue'
+import AppMenu from '@/components/AppMenu.vue'
 
 const { cabins, isLoading } = useCabins()
+
+// const items: AppMenuProps = {
+//   items: [
+//     {
+//       icon: Copy
+//     },
+//     {
+//       icon: Pencil
+//     },
+//     {
+//       icon: Trash
+//     }
+//   ]
+// }
 </script>
 
 <template>
@@ -52,7 +68,14 @@ const { cabins, isLoading } = useCabins()
     </Column>
     <Column>
       <template #body="{ data }: { data: CabinRowType }">
-        <EllipsisVertical />
+        <!-- :model="items" aria-haspopup="true" aria-controls="overlay_menu" -->
+        <AppMenu>
+          <template #button="{ toggle }">
+            <AppButtonIcon>
+              <EllipsisVertical class="size-5 text-gray-700" />
+            </AppButtonIcon>
+          </template>
+        </AppMenu>
       </template>
     </Column>
   </DataTable>
