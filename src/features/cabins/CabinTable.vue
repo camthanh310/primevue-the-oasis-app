@@ -1,29 +1,43 @@
 <script lang="ts" setup>
+import { computed } from 'vue'
+import { EllipsisVertical, Copy, Pencil, Trash } from 'lucide-vue-next'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
 import AppSpinner from '@/components/AppSpinner.vue'
 import AppEmpty from '@/components/AppEmpty.vue'
 import { useCabins } from '@/composables/cabins/useCabins'
 import type { CabinRowType } from '@/types/Collection'
-import { EllipsisVertical, Copy, Pencil, Trash } from 'lucide-vue-next'
 import AppButtonIcon from '@/components/AppButtonIcon.vue'
-import AppMenu from '@/components/AppMenu.vue'
+import AppMenu, { type AppMenuProps } from '@/components/AppMenu.vue'
 
 const { cabins, isLoading } = useCabins()
 
-// const items: AppMenuProps = {
-//   items: [
-//     {
-//       icon: Copy
-//     },
-//     {
-//       icon: Pencil
-//     },
-//     {
-//       icon: Trash
-//     }
-//   ]
-// }
+const items = computed(() => (value: number): AppMenuProps[] => [
+  {
+    label: 'Duplicate',
+    icon: Copy,
+    value: value,
+    action: (id: number) => {
+      console.log('TODO Duplicate', id)
+    }
+  },
+  {
+    label: 'Edit',
+    icon: Pencil,
+    value: value,
+    action: (id: number) => {
+      console.log('TODO Edit', id)
+    }
+  },
+  {
+    label: 'Delete',
+    icon: Trash,
+    value: value,
+    action: (id: number) => {
+      console.log('TODO Delete', id)
+    }
+  }
+])
 </script>
 
 <template>
@@ -68,10 +82,13 @@ const { cabins, isLoading } = useCabins()
     </Column>
     <Column>
       <template #body="{ data }: { data: CabinRowType }">
-        <!-- :model="items" aria-haspopup="true" aria-controls="overlay_menu" -->
-        <AppMenu>
+        <AppMenu
+          :items="items(data.id)"
+          aria-haspopup="true"
+          :aria-controls="`overlay_menu_${data.id}`"
+        >
           <template #button="{ toggle }">
-            <AppButtonIcon>
+            <AppButtonIcon @click="toggle">
               <EllipsisVertical class="size-5 text-gray-700" />
             </AppButtonIcon>
           </template>

@@ -13,7 +13,7 @@ module.exports = {
     ecmaVersion: 'latest'
   },
   rules: {
-    'vue/require-expose': true,
+    'vue/require-expose': 2,
     'vue/no-undef-components': [
       'error',
       {

@@ -5,6 +5,10 @@ interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget
 }
 
+defineOptions({
+  inheritAttrs: true
+})
+
 const emit = defineEmits<{
   change: [file: File]
 }>()

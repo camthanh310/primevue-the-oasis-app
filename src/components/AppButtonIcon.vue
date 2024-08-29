@@ -1,5 +1,9 @@
 <script lang="ts" setup>
 import Button from 'primevue/button'
+
+defineOptions({
+  inheritAttrs: true
+})
 </script>
 
 <template>
