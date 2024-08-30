@@ -6,35 +6,48 @@ import Column from 'primevue/column'
 import AppSpinner from '@/components/AppSpinner.vue'
 import AppEmpty from '@/components/AppEmpty.vue'
 import { useCabins } from '@/composables/cabins/useCabins'
+import { useDeleteCabin } from '@/composables/cabins/useDeleteCabin'
 import type { CabinRowType } from '@/types/Collection'
 import AppButtonIcon from '@/components/AppButtonIcon.vue'
 import AppMenu, { type AppMenuProps } from '@/components/AppMenu.vue'
+import { useCreateCabin } from '@/composables/cabins/useCreateCabin'
 
 const { cabins, isLoading } = useCabins()
+const { createCabin, isCreating } = useCreateCabin()
+const { deleteCabin, isDeleting } = useDeleteCabin()
 
-const items = computed(() => (value: number): AppMenuProps[] => [
+const items = computed(() => (value: CabinRowType): AppMenuProps[] => [
   {
     label: 'Duplicate',
     icon: Copy,
     value: value,
-    action: (id: number) => {
-      console.log('TODO Duplicate', id)
+    disabled: isCreating.value,
+    action: (actionValue: CabinRowType) => {
+      createCabin({
+        name: `Copy of ${actionValue.name}`,
+        maxCapacity: actionValue.maxCapacity,
+        regularPrice: actionValue.regularPrice,
+        discount: actionValue.discount,
+        image: actionValue.image,
+        description: actionValue.description
+      })
     }
   },
   {
     label: 'Edit',
     icon: Pencil,
     value: value,
-    action: (id: number) => {
-      console.log('TODO Edit', id)
+    action: (actionValue: CabinRowType) => {
+      console.log('TODO Edit', actionValue)
     }
   },
   {
     label: 'Delete',
     icon: Trash,
     value: value,
-    action: (id: number) => {
-      console.log('TODO Delete', id)
+    disabled: isDeleting.value,
+    action: (actionValue: CabinRowType) => {
+      deleteCabin(actionValue.id)
     }
   }
 ])
@@ -83,7 +96,7 @@ const items = computed(() => (value: number): AppMenuProps[] => [
     <Column>
       <template #body="{ data }: { data: CabinRowType }">
         <AppMenu
-          :items="items(data.id)"
+          :items="items(data)"
           aria-haspopup="true"
           :aria-controls="`overlay_menu_${data.id}`"
         >

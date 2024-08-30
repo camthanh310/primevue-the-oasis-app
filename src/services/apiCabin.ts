@@ -28,7 +28,7 @@ export async function createEditCabin(newCabin: Cabin, id?: string | null) {
     : `${supabaseUrl}/storage/v1/object/public/cabin-images/${imageName}`
 
   // 1 Create/Edit cabin
-  let query = supabase.from('cabins')
+  const query = supabase.from('cabins')
   let data: Cabin | null = null
   let error = null
 
@@ -76,6 +76,17 @@ export async function createEditCabin(newCabin: Cabin, id?: string | null) {
     await supabase.from('cabins').delete().eq('id', data!.id!)
     console.error(storageError)
     throw new Error('Cabins image could not be uploaded and the cabin was not created')
+  }
+
+  return data
+}
+
+export async function deleteCabin(id: number) {
+  const { data, error } = await supabase.from('cabins').delete().eq('id', id)
+
+  if (error) {
+    console.error(error)
+    throw new Error('Cabins could not be deleted')
   }
 
   return data
