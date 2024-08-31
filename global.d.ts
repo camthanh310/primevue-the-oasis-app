@@ -1,6 +1,6 @@
 import type { helpers } from '@/plugins/helpers'
 
-declare module 'vue' {
+declare module '@vue/runtime-core' {
   interface ComponentCustomProperties {
     $helpers: typeof helpers
   }

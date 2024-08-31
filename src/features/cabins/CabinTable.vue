@@ -3,6 +3,7 @@ import { computed } from 'vue'
 import { EllipsisVertical, Copy, Pencil, Trash } from 'lucide-vue-next'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
+import { useConfirm } from 'primevue/useconfirm'
 import AppSpinner from '@/components/AppSpinner.vue'
 import AppEmpty from '@/components/AppEmpty.vue'
 import { useCabins } from '@/composables/cabins/useCabins'
@@ -15,6 +16,7 @@ import { useCreateCabin } from '@/composables/cabins/useCreateCabin'
 const { cabins, isLoading } = useCabins()
 const { createCabin, isCreating } = useCreateCabin()
 const { deleteCabin, isDeleting } = useDeleteCabin()
+const confirm = useConfirm()
 
 const items = computed(() => (value: CabinRowType): AppMenuProps[] => [
   {
@@ -47,7 +49,22 @@ const items = computed(() => (value: CabinRowType): AppMenuProps[] => [
     value: value,
     disabled: isDeleting.value,
     action: (actionValue: CabinRowType) => {
-      deleteCabin(actionValue.id)
+      confirm.require({
+        message:
+          'Are you sure you want to delete this cabins permanently? This action cannot be undone.',
+        header: 'Delete cabins',
+        rejectLabel: 'Cancel',
+        rejectProps: {
+          label: 'Cancel',
+          severity: 'secondary',
+          outlined: true
+        },
+        acceptProps: {
+          label: 'Delete',
+          severity: 'danger'
+        },
+        accept: () => deleteCabin(actionValue.id)
+      })
     }
   }
 ])
