@@ -4,11 +4,20 @@ import { XIcon } from 'lucide-vue-next'
 import Dialog from 'primevue/dialog'
 import Button from 'primevue/button'
 
+defineSlots<{
+  button: (props: { open: () => void }) => any
+  default: (props: { closeCallback: () => void }) => any
+}>()
+
 const visible = ref(false)
 
 function open() {
   visible.value = true
 }
+
+defineExpose({
+  open
+})
 </script>
 <template>
   <slot name="button" :open="open" />

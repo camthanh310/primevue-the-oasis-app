@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, ref, watchEffect } from 'vue'
+import { computed, useTemplateRef, watchEffect } from 'vue'
 import { useForm } from 'vee-validate'
 import { toTypedSchema } from '@vee-validate/zod'
 import { object, string, number, any } from 'zod'
@@ -10,14 +10,22 @@ import AppForm from '@/components/AppForm.vue'
 import AppInput from '@/components/AppInput.vue'
 import AppTextarea from '@/components/AppTextarea.vue'
 import FormRow from '@/components/FormRow.vue'
+import type { CabinRowType } from '@/types/Collection'
+
+interface Props {
+  cabinToEdit?: CabinRowType | null
+}
 
 const { createCabin, isCreating } = useCreateCabin()
+
+const { cabinToEdit } = defineProps<Props>()
 
 const emit = defineEmits<{
   'on-close-modal': []
 }>()
 
-const fileRef = ref<InstanceType<typeof AppFile> | null>(null)
+const isEditSession = computed<boolean>(() => Boolean(cabinToEdit?.id))
+const fileRef = useTemplateRef<InstanceType<typeof AppFile> | null>('appFile')
 
 const schema = toTypedSchema(
   object({
@@ -83,7 +91,16 @@ function handleUploadFile(file: File) {
 }
 
 watchEffect(() => {
-  discount.value = 0
+  if (!isEditSession.value) {
+    discount.value = 0
+  } else {
+    name.value = cabinToEdit!.name!
+    maxCapacity.value = cabinToEdit!.maxCapacity!
+    regularPrice.value = cabinToEdit!.regularPrice!
+    discount.value = cabinToEdit!.discount!
+    description.value = cabinToEdit!.description!
+    image.value = cabinToEdit!.image!
+  }
 })
 </script>
 
@@ -132,7 +149,7 @@ watchEffect(() => {
         id="image"
         accept="image/*"
         @change="handleUploadFile"
-        ref="fileRef"
+        ref="appFile"
         v-bind="imageAttrs"
         :disabled="isWorking"
       />

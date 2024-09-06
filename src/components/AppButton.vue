@@ -45,7 +45,7 @@ const sizeClass = computed((): string => {
 
 <template>
   <Button
-    class="border-none rounded-md shadow-sm"
+    class="border-none rounded-md shadow-sm disabled:cursor-none disabled:opacity-70"
     :class="[variantClass, sizeClass]"
     v-bind="$attrs"
     unstyled

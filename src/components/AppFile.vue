@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { useTemplateRef } from 'vue'
 
 interface HTMLInputEvent extends Event {
   target: HTMLInputElement & EventTarget
@@ -13,7 +13,7 @@ const emit = defineEmits<{
   change: [file: File]
 }>()
 
-const inputFile = ref<HTMLInputElement | null>(null)
+const inputFile = useTemplateRef('file')
 
 function onchange(e: HTMLInputEvent) {
   emit('change', e.target.files![0])
@@ -31,7 +31,7 @@ defineExpose({
 <template>
   <input
     type="file"
-    ref="inputFile"
+    ref="file"
     class="text-base text-gray-600 rounded-md file:border-0 file:font-medium file:py-2 file:px-4 file:mr-3 file:rounded-md file:text-indigo-50 file:bg-indigo-600 file:cursor-pointer file:transition-colors file:duration-200 hover:file:bg-indigo-700"
     v-bind="{ ...$attrs, onchange }"
   />

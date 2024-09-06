@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed } from 'vue'
+import { computed, ref, useTemplateRef } from 'vue'
 import { EllipsisVertical, Copy, Pencil, Trash } from 'lucide-vue-next'
 import DataTable from 'primevue/datatable'
 import Column from 'primevue/column'
@@ -12,12 +12,16 @@ import type { CabinRowType } from '@/types/Collection'
 import AppButtonIcon from '@/components/AppButtonIcon.vue'
 import AppMenu, { type AppMenuProps } from '@/components/AppMenu.vue'
 import { useCreateCabin } from '@/composables/cabins/useCreateCabin'
+import AppModal from '@/components/AppModal.vue'
+import CreateCabinForm from '@/features/cabins/CreateCabinForm.vue'
 
 const { cabins, isLoading } = useCabins()
 const { createCabin, isCreating } = useCreateCabin()
 const { deleteCabin, isDeleting } = useDeleteCabin()
 const confirm = useConfirm()
 
+const appModalRef = useTemplateRef<InstanceType<typeof AppModal>>('appModal')
+const cabin = ref<CabinRowType | null>(null)
 const items = computed(() => (value: CabinRowType): AppMenuProps[] => [
   {
     label: 'Duplicate',
@@ -40,7 +44,8 @@ const items = computed(() => (value: CabinRowType): AppMenuProps[] => [
     icon: Pencil,
     value: value,
     action: (actionValue: CabinRowType) => {
-      console.log('TODO Edit', actionValue)
+      appModalRef.value?.open()
+      cabin.value = actionValue
     }
   },
   {
@@ -126,4 +131,10 @@ const items = computed(() => (value: CabinRowType): AppMenuProps[] => [
       </template>
     </Column>
   </DataTable>
+
+  <AppModal ref="appModal">
+    <template #default="{ closeCallback }">
+      <CreateCabinForm :cabin-to-edit="cabin" @on-close-modal="closeCallback" />
+    </template>
+  </AppModal>
 </template>
