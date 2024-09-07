@@ -11,13 +11,14 @@ import AppInput from '@/components/AppInput.vue'
 import AppTextarea from '@/components/AppTextarea.vue'
 import FormRow from '@/components/FormRow.vue'
 import type { CabinRowType } from '@/types/Collection'
+import { useEditCabin } from '@/composables/cabins/useEditCabin'
 
 interface Props {
   cabinToEdit?: CabinRowType | null
 }
 
 const { createCabin, isCreating } = useCreateCabin()
-
+const { editCabin, isEditing } = useEditCabin()
 const { cabinToEdit } = defineProps<Props>()
 
 const emit = defineEmits<{
@@ -67,23 +68,42 @@ function onCloseModal() {
   emit('on-close-modal')
 }
 
-const isWorking = computed(() => isCreating.value)
+const isWorking = computed(() => isCreating.value || isEditing.value)
 
 const onSubmit = handleSubmit((values, actions) => {
-  console.log(values)
-
-  createCabin(values, {
-    onSuccess: () => {
-      actions.resetForm({
-        values: {
-          discount: 0,
-          image: null
+  if (isEditSession.value) {
+    editCabin(
+      {
+        newCabinData: values as CabinRowType,
+        id: cabinToEdit!.id
+      },
+      {
+        onSuccess: () => {
+          actions.resetForm({
+            values: {
+              discount: 0,
+              image: null
+            }
+          })
+          fileRef.value?.cleanInputFile()
+          onCloseModal()
         }
-      })
-      fileRef.value?.cleanInputFile()
-      onCloseModal()
-    }
-  })
+      }
+    )
+  } else {
+    createCabin(values, {
+      onSuccess: () => {
+        actions.resetForm({
+          values: {
+            discount: 0,
+            image: null
+          }
+        })
+        fileRef.value?.cleanInputFile()
+        onCloseModal()
+      }
+    })
+  }
 })
 
 function handleUploadFile(file: File) {
@@ -156,7 +176,9 @@ watchEffect(() => {
     </FormRow>
     <FormRow>
       <AppButton type="reset" variant="secondary" @click="onCloseModal">Cancel</AppButton>
-      <AppButton type="submit" :disabled="isWorking">Create new cabin</AppButton>
+      <AppButton type="submit" :disabled="isWorking">
+        {{ isEditSession ? 'Edit Cabin' : 'Create new cabin' }}
+      </AppButton>
     </FormRow>
   </AppForm>
 </template>

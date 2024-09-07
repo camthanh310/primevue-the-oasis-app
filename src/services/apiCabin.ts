@@ -12,7 +12,7 @@ export async function getCabins() {
   return data
 }
 
-export async function createEditCabin(newCabin: Cabin, id?: string | null) {
+export async function createEditCabin(newCabin: Cabin, id?: string | number | null) {
   let hasImagePath = false
   if (typeof newCabin.image === 'string') {
     hasImagePath = newCabin.image?.startsWith?.(supabaseUrl)
