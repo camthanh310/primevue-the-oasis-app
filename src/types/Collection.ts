@@ -13,3 +13,9 @@ type CabinImageType = {
   image?: string | File | null
 }
 export type Cabin = Omit<CabinType, 'image'> & CabinImageType
+
+export type GuestRowType = Database['public']['Tables']['guests']['Row']
+export type GuestInsertType = Database['public']['Tables']['guests']['Insert']
+
+export type BookingRowType = Database['public']['Tables']['bookings']['Row']
+export type BookingInsertType = Database['public']['Tables']['bookings']['Insert']

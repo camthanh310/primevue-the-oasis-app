@@ -2,6 +2,7 @@
 import { RouterLink } from 'vue-router'
 import { Building, Calendar, Home, Settings, User } from 'lucide-vue-next'
 import type { Menu } from '@/types/Menu'
+import AppUploader from '@/data/AppUploader.vue'
 
 const menus: Menu[] = [
   {
@@ -58,5 +59,7 @@ const menus: Menu[] = [
         </li>
       </ul>
     </nav>
+
+    <AppUploader />
   </aside>
 </template>
