@@ -17,10 +17,7 @@ defineOptions({
   inheritAttrs: true
 })
 
-const props = withDefaults(defineProps<Props>(), {
-  variant: 'primary',
-  size: 'medium'
-})
+const { variant = 'primary', size = 'medium' } = defineProps<Props>()
 
 const variantClass = computed(() => {
   const css: Record<VaritantType, string> = {
@@ -29,7 +26,7 @@ const variantClass = computed(() => {
     danger: 'text-red-100 bg-red-700 hover:bg-red-800'
   }
 
-  return css[props.variant]
+  return css[variant]
 })
 
 const sizeClass = computed((): string => {
@@ -39,7 +36,7 @@ const sizeClass = computed((): string => {
     large: 'font-medium py-2 px-6 text-lg'
   }
 
-  return css[props.size]
+  return css[size]
 })
 </script>
 

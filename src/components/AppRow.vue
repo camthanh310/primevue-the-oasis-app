@@ -7,9 +7,7 @@ interface Props {
   directional?: DirectionalType
 }
 
-const props = withDefaults(defineProps<Props>(), {
-  directional: 'vertical'
-})
+const { directional = 'vertical' } = defineProps<Props>()
 
 const rowClass = computed(() => {
   const customClass: Record<DirectionalType, string> = {
@@ -17,7 +15,7 @@ const rowClass = computed(() => {
     vertical: 'flex-col gap-5'
   }
 
-  return customClass[props.directional]
+  return customClass[directional]
 })
 </script>
 

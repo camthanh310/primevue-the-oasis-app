@@ -17,9 +17,7 @@ const emit = defineEmits<{
   submit: [e: Event]
 }>()
 
-const props = withDefaults(defineProps<Props>(), {
-  formType: 'regular'
-})
+const { formType = 'regular' } = defineProps<Props>()
 
 const formClass = computed(() => {
   const css: Record<FormType, string> = {
@@ -27,7 +25,7 @@ const formClass = computed(() => {
     modal: 'w-[56rem]'
   }
 
-  return css[props.formType]
+  return css[formType]
 })
 
 function onsubmit(e: Event) {
